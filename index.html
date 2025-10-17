@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>El viaje hacia tu sonrisa — Melissa</title>
+
+  <link rel="icon" href="assets/fav.ico" type="image/x-icon">
+
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Great+Vibes&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --bg-1:#fff0f6;
+      --bg-2:#fff7fb;
+      --accent:#ff7fbf;
+      --accent-2:#ffd6e8;
+      --muted:#7a6b77;
+      --card:#ffffff;
+      --glass: rgba(255,255,255,0.75);
+      --btn-shadow: 0 6px 18px rgba(255,127,191,0.12);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0;
+      font-family: 'Poppins', system-ui, -apple-system, 'Segoe UI', Roboto, Arial;
+      color: #3b2b34;
+      background: linear-gradient(180deg,var(--bg-1),var(--bg-2));
+      -webkit-font-smoothing:antialiased;
+      -moz-osx-font-smoothing:grayscale;
+    }
+
+    .container{max-width:980px;margin:28px auto;padding:20px}
+    header{display:flex;align-items:center;gap:16px;margin-bottom:6px}
+    h1{margin:0;font-size:1.5rem;color:#3b2b34}
+    .card{background:var(--card);border-radius:14px;padding:18px;box-shadow:0 8px 30px rgba(90,40,80,0.06)}
+
+    /* Splash */
+    #splash{min-height:64vh;display:grid;place-items:center}
+    .pass-box{width:min(520px,92vw);text-align:center;padding:28px;border-radius:14px;background:linear-gradient(180deg,rgba(255,255,255,0.92),var(--glass));}
+    .pass-input{width:100%;padding:12px 14px;border-radius:10px;border:1px solid #f7dce6;font-size:1rem;outline:none}
+    .btn{
+      padding:10px 16px;border-radius:999px;border:0;background:linear-gradient(90deg,var(--accent),#ff9ac4);
+      color:white;font-weight:700;cursor:pointer;box-shadow:var(--btn-shadow);
+      transition:transform .14s ease, box-shadow .14s ease, opacity .12s ease;
+    }
+    .btn:hover{ transform:translateY(-3px); box-shadow:0 14px 30px rgba(255,127,191,0.14) }
+    .btn:active{ transform:translateY(-1px) }
+
+    /* stages area */
+    #stageArea{display:none;margin-top:18px}
+    .nav{display:flex;gap:8px;align-items:center;margin-bottom:12px}
+    .stage-pill{padding:6px 10px;border-radius:999px;background:var(--accent-2);font-weight:700}
+    .progress{font-size:.95rem;color:var(--muted);margin-left:auto}
+
+    .stage{display:none;padding:20px;border-radius:12px;background:linear-gradient(180deg,#ffffff,#fffafc);min-height:58vh}
+
+    /* Stage 1 */
+    #scanWrap{position:relative;display:grid;place-items:center;overflow:hidden;border-radius:12px}
+    #scanImg{max-width:560px;width:90%;border-radius:10px;box-shadow:0 8px 40px rgba(255,127,191,0.06);transition:transform .18s ease, transform-origin .05s ease;will-change:transform;display:block}
+    canvas.reveal{position:absolute;left:50%;transform:translateX(-50%);top:0;pointer-events:auto}
+    .hint{margin-top:12px;color:var(--muted)}
+
+    /* Stage 2 */
+    .foods{display:flex;gap:12px;flex-wrap:wrap}
+    .food{width:96px;height:96px;border-radius:12px;background:var(--accent-2);display:flex;align-items:center;justify-content:center;cursor:grab;box-shadow:0 6px 20px rgba(200,120,160,0.04);user-select:none}
+    .food img{max-width:68px;max-height:68px;border-radius:8px}
+    .plate{width:260px;height:260px;border-radius:50%;border:6px dashed #ffd2e8;background:linear-gradient(180deg,#fff,#fff8fb);display:flex;align-items:center;justify-content:center;margin:12px;position:relative;overflow:hidden}
+    .plate-placeholder{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);color:var(--muted);font-weight:600;pointer-events:none}
+    .plate-items{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;padding:10px;gap:6px;position:relative;z-index:2}
+    .plate-item{position:relative;width:54px;height:54px;border-radius:8px;overflow:hidden}
+    .plate-item img{width:54px;height:54px;display:block}
+    .plate-item .remove-x{
+      position:absolute;right:2px;top:2px;background:rgba(0,0,0,0.6);color:white;border-radius:50%;width:20px;height:20px;display:grid;place-items:center;font-weight:700;font-size:12px;cursor:pointer;z-index:5;
+    }
+
+    /* foods area drop target highlight */
+    .foods.drop-target{outline:2px dashed rgba(0,0,0,0.08);padding:8px;border-radius:8px}
+
+    /* Stage 3 */
+    .choices button{display:block;margin:8px 0;padding:8px;border-radius:8px;border:1px solid #f0e6ea;background:white;cursor:pointer;transition:transform .08s; text-align:left}
+    .choices button:hover{ transform:translateX(6px) }
+
+    /* Stage 4 */
+    #puzzleCanvas{max-width:560px;width:90%;border-radius:10px;box-shadow:0 6px 18px rgba(0,0,0,0.06);background:#fff}
+
+    /* Stage 5 card */
+    .letter{max-width:700px;margin:0 auto;padding:28px;border-radius:12px;background:linear-gradient(180deg,#fff8fb,#fff);box-shadow:0 12px 40px rgba(255,127,191,0.06);font-size:1.05rem;font-family: 'Great Vibes', cursive}
+    .signature{margin-top:16px;font-weight:700;font-family: 'Poppins', sans-serif}
+
+    /* in-page toast/modal */
+    #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:28px;background:rgba(255,255,255,0.96);padding:14px 18px;border-radius:12px;box-shadow:0 10px 30px rgba(80,30,60,0.12);display:none;z-index:999;width:min(92%,520px)}
+    #toast h4{margin:0 0 6px 0;font-size:1rem}
+    #toast p{margin:0;color:var(--muted)}
+
+    footer{margin-top:22px;text-align:center;color:#9a8a92;font-size:.9rem}
+    @media(max-width:720px){.container{padding:12px}}
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='48' height='48'><rect rx='10' width='48' height='48' fill='%23ffd6e8'/><text x='50%' y='56%' dominant-baseline='middle' text-anchor='middle' font-size='20' fill='%23ff7fbf' font-family='sans-serif'>M</text></svg>" alt="logo" style="width:56px;height:56px;border-radius:10px;"/>
+      <div>
+        <h1>El viaje hacia tu sonrisa — Melissa</h1>
+        <div style="color:#7a6b77;font-size:0.95rem">Un regalo interactivo — 5 etapas para llegar al mensaje final</div>
+      </div>
+    </header>
+
+    <section id="splash" class="card">
+      <div class="pass-box">
+        <h2 style="font-family:'Great Vibes',cursive;font-size:2rem;margin:0 0 8px 0">Hola Melissa ✨</h2>
+        <p style="color:var(--muted)">Para descubrir tu sorpresa primero ingresa la contraseña.<br>
+          Al finalizar estará la combinación para abrir el candado de la caja.
+        </p>
+        <input id="passwordInput" type="password" class="pass-input" placeholder="Ingresa la contraseña" autocomplete="off" />
+        <div style="height:12px"></div>
+        <button id="unlockBtn" class="btn">Entrar</button>
+        <p style="margin-top:12px;color:#777;font-size:.95rem">La contraseña está en la nota de las flores. 🌻</p>
+      </div>
+    </section>
+
+    <section id="stageArea">
+      <div class="nav card" style="display:flex;align-items:center;">
+        <div class="stage-pill">Etapas</div>
+        <div class="progress" id="progressText">Misión 0/5 completada</div>
+      </div>
+
+      <!-- STAGE 1 -->
+      <div id="stage1" class="stage card">
+        <h2>Luz y Sombras — Radiología</h2>
+        <p class="hint">Pasa el cursor para acercar (zoom). Haz <strong>clic</strong> en la zona correcta para descubrir el mensaje oculto.</p>
+        <div id="scanWrap">
+          <img id="scanImg" src="assets/xray-placeholder.jpg" alt="rayos-x" />
+          <canvas id="scanCanvas" class="reveal"></canvas>
+        </div>
+        <div style="margin-top:14px;text-align:center">
+          <button class="btn" id="to2" style="display:none">Siguiente etapa</button>
+        </div>
+      </div>
+
+      <!-- STAGE 2 -->
+      <div id="stage2" class="stage card">
+        <h2>Nutre tu corazón — Nutriología</h2>
+        <p class="hint">Arrastra 5 alimentos saludables al plato. Evita los alimentos chatarra.</p>
+        <div style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-start">
+          <div style="flex:1;min-width:220px">
+            <div id="foodsList" class="foods"></div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center">
+            <div class="plate center" id="plate">
+              <div class="plate-placeholder" id="platePlaceholder">Arrastra aquí</div>
+              <div class="plate-items" id="plateItems"></div>
+            </div>
+            <div style="margin-top:8px">
+              <button class="btn" id="checkPlate">Revisar plato</button>
+            </div>
+          </div>
+        </div>
+        <div style="margin-top:14px;text-align:center">
+          <button class="btn" id="to3" style="display:none">Siguiente etapa</button>
+        </div>
+      </div>
+
+      <!-- STAGE 3 -->
+      <div id="stage3" class="stage card">
+        <h2>Reino encantado — Disney y princesas</h2>
+        <p class="hint">Acierta al menos 10 preguntas para avanzar. Las preguntas van aumentando de dificultad.</p>
+        <div id="quizArea"></div>
+        <div style="margin-top:14px;text-align:center">
+          <button class="btn" id="to4" style="display:none">Siguiente etapa</button>
+        </div>
+      </div>
+
+      <!-- STAGE 4 -->
+      <div id="stage4" class="stage card">
+        <h2>Los recuerdos ocultos — Rompecabezas</h2>
+        <p class="hint">Haz click en una pieza para seleccionarla (se resaltará). Puedes hacer click en otra pieza para intercambiar o <em>arrastrar</em> la pieza seleccionada para soltarla en otra posición.</p>
+        <canvas id="puzzleCanvas"></canvas>
+        <div style="margin-top:12px;text-align:center"><button class="btn" id="shufflePuzzle">Mezclar</button></div>
+        <div style="margin-top:14px;text-align:center">
+          <button class="btn" id="to5" style="display:none">Siguiente etapa</button>
+        </div>
+      </div>
+
+      <!-- STAGE 5 -->
+      <div id="stage5" class="stage card">
+        <h2>El secreto final</h2>
+        <div class="letter" id="finalLetter">
+          <p id="letterText">Querida Melissa,</p>
+          <p id="letterBody" style="font-family:'Poppins',sans-serif;font-size:1.05rem;color:#4a3440">Hoy celebramos el día en que llegaste al mundo. Espero que este pequeño viaje te recuerde lo especial que eres. Que este año te regale aventuras, amor y sueños cumplidos. Gracias por dejarme acompañarte.
+          </p>
+          <p class="signature" id="fromName" style="text-align:right">Con cariño,<br/>Erick</p>
+
+        <div style="text-align:center;margin-top:12px"><button class="btn" id="playFinal">Reproducir música & celebrar</button></div>
+          
+          <p>
+            <h1 style="font-family:'Poppins',sans-serif;font-size:1.05rem;color:#4a3440">Cómo abrir el candado</h1>
+
+            <ol style="font-family:'Poppins',sans-serif;font-size:1.05rem;color:#4a3440">
+              <li>Coloca el dial en <span class="highlight">0</span>.</li>
+              <li>Gira el dial <span class="highlight">4 veces a la derecha</span> (sentido de las manecillas del reloj) y termina en <span class="highlight">0</span>.</li>
+              <li>Gira <span class="highlight">3 veces a la derecha</span>, y en la <span class="highlight">tercera vuelta</span>, detente en el número <span class="highlight">37</span>.</li>
+              <li>Gira <span class="highlight">una vuelta completa a la izquierda</span> (sentido contrario a las manecillas del reloj) y detente en el número <span class="highlight">10</span>.</li>
+              <li>Gira a la derecha hasta llegar al número <span class="highlight">29</span>. No es necesario dar una vuelta completa.</li>
+            </ol>
+          </p>
+        </div>
+      </div>
+
+    </section>
+  </div>
+
+  <div id="toast"><h4 id="toastTitle"></h4><p id="toastBody"></p></div>
+
+  <script>
+    const PASSWORD = '#M3liss@1810';
+    const ASSETS = {
+      scanImage: 'assets/xray-placeholder.jpg',
+      foods: [
+        {id:'manzana',label:'Manzana',img:'assets/apple.png',good:true},
+        {id:'zanahoria',label:'Zanahoria',img:'assets/carrot.png',good:true},
+        {id:'aguacate',label:'Aguacate',img:'assets/avocado.png',good:true},
+        {id:'yogurt',label:'Yogurt',img:'assets/yogurt.png',good:true},
+        {id:'agua',label:'Agua',img:'assets/water.png',good:true},
+        {id:'salmon',label:'Salmón',img:'assets/salmon.png',good:true},
+        {id:'nueces',label:'Nueces',img:'assets/nuts.png',good:true},
+        {id:'huevo',label:'Huevo',img:'assets/egg.png',good:true},
+        {id:'leche',label:'Leche',img:'assets/milk.png',good:true},
+        {id:'platano',label:'Plátano',img:'assets/banana.png',good:true},
+        {id:'hamburguesa',label:'Hamburguesa',img:'assets/burger.png',good:false},
+        {id:'papas',label:'Papas',img:'assets/fries.png',good:false},
+        {id:'donut',label:'Donut',img:'assets/donut.png',good:false}
+      ],
+      puzzleImage:'assets/memory.jpg',
+      finalMusic:'assets/final-song.mp3'
+    }
+
+    const TEXTS = {
+      letterIntro: 'Querida Melissa,',
+      letterBody: `Hoy celebramos el día en que llegaste al mundo. Espero que este pequeño viaje te recuerde lo especial que eres. Que este año te traiga aventuras, amor y sueños cumplidos. Gracias por permitirme acompañarte y compartir grandes momentos. Hoy es tu día, y quería regalarte algo que conserve pequeñas pruebas de lo extraordinaria que eres. Este es solo el comienzo de muchas historias por venir.
+        Feliz cumpleaños, preciosa.`,
+      fromName: '- Erick'
+    }
+
+    // helpers
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+
+    // initial wiring
+    $('#scanImg').src = ASSETS.scanImage;
+    $('#letterText').innerText = TEXTS.letterIntro;
+    $('#letterBody').innerText = TEXTS.letterBody;
+    $('#fromName').innerText = TEXTS.fromName;
+
+    // toast (in-page)
+    function showMessage(title, text, timeout=2500){
+      const t = $('#toast'); $('#toastTitle').innerText = title; $('#toastBody').innerText = text;
+      t.style.display = 'block'; t.style.opacity = 1;
+      if(t._hideTimeout) clearTimeout(t._hideTimeout);
+      t._hideTimeout = setTimeout(()=>{ t.style.opacity=0; setTimeout(()=> t.style.display='none',200) }, timeout);
+    }
+
+    // AUTH
+    $('#unlockBtn').addEventListener('click', ()=>{
+      const v = $('#passwordInput').value.trim();
+      if(!v) return showMessage('Falta contraseña','Ingresa la contraseña',2000);
+      if(v === PASSWORD){
+        $('#splash').style.display='none';
+        $('#stageArea').style.display='block';
+        loadStage(1);
+      } else {
+        showMessage('Contraseña incorrecta','Verifica la clave.',2200);
+      }
+    });
+
+    // progress and nav actions
+    const progress = {completed: new Set()};
+    function updateProgress(){
+      const n = progress.completed.size;
+      $('#progressText').innerText = `Misión ${n}/5 completada`;
+      // show/hide next buttons depending on completion of the current stage
+      setTimeout(()=>{ // small delay to ensure DOM updated
+        $('#to2').style.display = progress.completed.has(1) ? 'inline-block' : 'none';
+        $('#to3').style.display = progress.completed.has(2) ? 'inline-block' : 'none';
+        $('#to4').style.display = progress.completed.has(3) ? 'inline-block' : 'none';
+        $('#to5').style.display = progress.completed.has(4) ? 'inline-block' : 'none';
+      },80);
+    }
+
+    function showOnly(stageId){
+      [1,2,3,4,5].forEach(i=>{
+        const el = $(`#stage${i}`);
+        if(el) el.style.display = (i===stageId)?'block':'none';
+      });
+      updateProgress();
+    }
+
+    function loadStage(n){
+      showOnly(n);
+      if(n===1) initScan();
+      if(n===2) initFoods();
+      if(n===3) buildQuiz();
+      if(n===4) initPuzzle();
+      if(n===5) {/* final stage */}
+    }
+
+    /* ---------------- Stage 1: Click-to-reveal + zoom on hover ---------------- */
+    let stage1Revealed = false;
+    function initScan(){
+      const img = $('#scanImg');
+      const canvas = $('#scanCanvas');
+
+      // fit canvas to image
+      function fit(){
+        const rect = img.getBoundingClientRect();
+        canvas.width = rect.width;
+        canvas.height = rect.height;
+        canvas.style.width = rect.width+'px';
+        canvas.style.height = rect.height+'px';
+        // center canvas over image
+        canvas.style.top = img.offsetTop+'px';
+        canvas.style.left = (img.offsetLeft + img.width/2 - canvas.width/2) + 'px';
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        ctx.fillStyle = 'rgba(30,30,40,0.88)';
+        ctx.fillRect(0,0,canvas.width,canvas.height);
+      }
+      img.onload = fit; window.addEventListener('resize', fit);
+
+      // ZOOM ON HOVER: improved focal zoom using mouse position, smooth
+      $('#scanWrap').addEventListener('mousemove', (e)=>{
+        const rect = img.getBoundingClientRect();
+        const x = (e.clientX - rect.left);
+        const y = (e.clientY - rect.top);
+        // percent origins
+        const ox = (x / rect.width) * 100;
+        const oy = (y / rect.height) * 100;
+        img.style.transformOrigin = `${ox}% ${oy}%`;
+        img.style.transform = 'scale(1.18)'; // mayor zoom visual
+      });
+
+      // on touch, zoom centered at touch point
+      $('#scanWrap').addEventListener('touchmove', (e)=>{
+        const t = e.touches[0];
+        const rect = img.getBoundingClientRect();
+        const x = (t.clientX - rect.left);
+        const y = (t.clientY - rect.top);
+        const ox = (x / rect.width) * 100;
+        const oy = (y / rect.height) * 100;
+        img.style.transformOrigin = `${ox}% ${oy}%`;
+        img.style.transform = 'scale(1.18)';
+      }, {passive:true});
+
+      $('#scanWrap').addEventListener('mouseleave', ()=>{ img.style.transform = 'scale(1)'; });
+      $('#scanWrap').addEventListener('touchend', ()=>{ img.style.transform = 'scale(1)'; });
+
+      // reveal only on click/tap
+      const ctx = canvas.getContext('2d');
+      function revealAt(x,y){
+        const r = 66;
+        ctx.globalCompositeOperation = 'destination-out';
+        const grd = ctx.createRadialGradient(x,y,10,x,y,r);
+        grd.addColorStop(0,'rgba(0,0,0,1)');
+        grd.addColorStop(1,'rgba(0,0,0,0)');
+        ctx.fillStyle = grd;
+        ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
+        ctx.globalCompositeOperation = 'source-over';
+      }
+
+      function checkIfCleared(){
+        const data = ctx.getImageData(0,0,canvas.width,canvas.height).data;
+        let trans=0; for(let i=3;i<data.length;i+=4) if(data[i]===0) trans++;
+        const pct = trans / (canvas.width*canvas.height);
+        if(pct > 0.15 && !stage1Revealed){
+          stage1Revealed = true;
+          progress.completed.add(1); updateProgress();
+          showMessage('Pista descubierta','Has descubierto la pista de radiología. Da clic al botón Siguiente etapa para continuar.',3000);
+        }
+      }
+
+      // click to reveal
+      canvas.addEventListener('click', e=>{
+        const rect = canvas.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        revealAt(x,y);
+        checkIfCleared();
+      });
+
+      // touch tap
+      canvas.addEventListener('touchstart', e=>{
+        const t = e.touches[0];
+        const rect = canvas.getBoundingClientRect();
+        const x = t.clientX - rect.left;
+        const y = t.clientY - rect.top;
+        revealAt(x,y);
+        checkIfCleared();
+      }, {passive:false});
+
+      // next button event (visibility controlled by updateProgress)
+      $('#to2').onclick = ()=> loadStage(2);
+    }
+
+    /* ---------------- Stage 2: Drag & drop foods (improved) ---------------- */
+    function initFoods(){
+      const list = $('#foodsList'); list.innerHTML='';
+      // helper to create food DOM
+      function createFoodEl(f){
+        const el = document.createElement('div'); el.className='food card'; el.draggable=true; el.dataset.id=f.id; el.title=f.label;
+        el.innerHTML = `<div style='text-align:center'><img src='${f.img}' alt='' /><div style='font-size:.75rem;margin-top:6px'>${f.label}</div></div>`;
+        // dragstart meta
+        el.addEventListener('dragstart', e=>{
+          e.dataTransfer.setData('text/plain', f.id);
+          e.dataTransfer.setData('text/from','options');
+        });
+        // click-to-add for touch/mobile
+        el.addEventListener('click', ()=> {
+          addToPlate(f.id);
+        });
+        return el;
+      }
+
+      // initial render of options
+      ASSETS.foods.forEach(f=>{
+        const el = createFoodEl(f);
+        list.appendChild(el);
+      });
+
+      const plate = $('#plate');
+      const plateItems = $('#plateItems');
+      const platePlaceholder = $('#platePlaceholder');
+
+      function plateCount(){ return plateItems.children.length; }
+
+      // Check if an item is already in plate
+      function isInPlate(id){
+        return !!Array.from(plateItems.querySelectorAll('img[data-id]')).find(i=>i.dataset.id===id);
+      }
+
+      // Add to plate (from options or click)
+      function addToPlate(id, from='options'){
+        if(plateCount() >= 5){
+          showMessage('Límite alcanzado', 'Solo puedes poner 5 alimentos en el plato.', 1800);
+          return;
+        }
+        if(isInPlate(id)){
+          showMessage('Ya está','Ese alimento ya está en el plato.',1400);
+          return;
+        }
+        const f = ASSETS.foods.find(x=>x.id===id);
+        if(!f) return;
+        // create plate item
+        const node = document.createElement('div'); node.className='plate-item'; node.draggable=true; node.dataset.id = f.id;
+        node.innerHTML = `<img src='${f.img}' alt='${f.label}' data-id='${f.id}' draggable="false" /><div class="remove-x" title="Quitar">×</div>`;
+        plateItems.appendChild(node);
+        if(plateItems.children.length > 0) platePlaceholder.style.display='none';
+
+        // remove from options list (if from options)
+        if(from === 'options'){
+          const opt = list.querySelector(`[data-id="${id}"]`);
+          if(opt) opt.remove();
+        }
+
+        // attach remove handler to X
+        const xbtn = node.querySelector('.remove-x');
+        xbtn.addEventListener('click', (ev)=>{
+          ev.stopPropagation();
+          removeFromPlate(id, true);
+        });
+
+        // make plate-item draggable back to options
+        node.addEventListener('dragstart', e=>{
+          e.dataTransfer.setData('text/plain', id);
+          e.dataTransfer.setData('text/from', 'plate');
+        });
+
+        // double-click on plate item to remove quickly
+        node.addEventListener('dblclick', ()=> removeFromPlate(id, true));
+
+        updatePlateState();
+      }
+
+      // Remove from plate; if reAddOption true, put back into options section
+      function removeFromPlate(id, reAddOption=false){
+        const item = plateItems.querySelector(`.plate-item[data-id="${id}"]`);
+        if(item) item.remove();
+        if(plateItems.children.length === 0) platePlaceholder.style.display='block';
+        if(reAddOption){
+          // re-create option if not already present
+          if(!list.querySelector(`[data-id="${id}"]`)){
+            const f = ASSETS.foods.find(x=>x.id===id);
+            if(f){
+              const el = createFoodEl(f);
+              list.appendChild(el);
+            }
+          }
+        }
+        updatePlateState();
+      }
+
+      // drop handling on plate (from options)
+      plate.addEventListener('dragover', e=>{ e.preventDefault(); plate.classList.add('drop-target'); });
+      plate.addEventListener('dragleave', ()=>{ plate.classList.remove('drop-target'); });
+      plate.addEventListener('drop', e=>{
+        e.preventDefault(); plate.classList.remove('drop-target');
+        const id = e.dataTransfer.getData('text/plain');
+        const from = e.dataTransfer.getData('text/from');
+        if(from === 'plate'){
+          // drag within plate: ignore (user can reorder by remove-and-add)
+          return;
+        }
+        addToPlate(id, 'options');
+      });
+
+      // allow dragging plate items back to options area
+      list.addEventListener('dragover', e=>{ e.preventDefault(); list.classList.add('drop-target'); });
+      list.addEventListener('dragleave', ()=> list.classList.remove('drop-target'));
+      list.addEventListener('drop', e=>{
+        e.preventDefault(); list.classList.remove('drop-target');
+        const id = e.dataTransfer.getData('text/plain');
+        const from = e.dataTransfer.getData('text/from');
+        if(from === 'plate'){
+          removeFromPlate(id, true);
+        }
+      });
+
+      // check button
+      $('#checkPlate').onclick = ()=>{
+        const items = Array.from(plateItems.querySelectorAll('img[data-id]')).map(img=>img.dataset.id);
+        const goodCount = items.map(id=>ASSETS.foods.find(f=>f.id===id)).filter(Boolean).filter(f=>f.good).length;
+        if(goodCount >= 5){
+          progress.completed.add(2); updateProgress();
+          showMessage('¡Bien!', 'Plato nutritivo completo. Puedes avanzar.', 2400);
+          $('#checkPlate').style.display = 'none';
+          $('#to3').style.display = 'inline-block';
+        } else {
+          showMessage('Aún no','Necesitas 5 alimentos saludables en el plato.',1800);
+        }
+      };
+
+      // expose to3
+      $('#to3').onclick = ()=> loadStage(3);
+
+      // helper to update state (e.g., disable remaining options if plate full)
+      function updatePlateState(){
+        const count = plateCount();
+        // if reached 5, disable all option clicks and drag
+        Array.from(list.querySelectorAll('.food')).forEach(el=>{
+          el.draggable = (count < 5);
+          el.style.opacity = (count < 5) ? '1' : '0.45';
+        });
+      }
+    }
+
+    /* ---------------- Stage 3: Quiz (preguntas con dificultad) ---------------- */
+    const quizQuestions = [
+      {q:'¿Qué película tiene una princesa llamada Ariel?', a:['La Sirenita','Cenicienta','Mulán'], correct:0, difficulty:1},
+      {q:'¿Cuál princesa perdió un zapato?', a:['Aurora','Bella','Cenicienta'], correct:2, difficulty:1},
+      {q:'¿Qué princesa tiene poderes de hielo?', a:['Anna','Elsa','Rapunzel'], correct:1, difficulty:1},
+      {q:'¿En cuál película aparece un genio?', a:['Aladdin','Pocahontas','La Bella'], correct:0, difficulty:2},
+      {q:'¿Qué película tiene la canción "Un mundo ideal"?', a:['Aladdín','Hércules','Enredados'], correct:0, difficulty:2},
+      {q:'¿Qué princesa vive bajo el mar?', a:['Ariel','Mulan','Tiana'], correct:0, difficulty:1},
+      {q:'¿Cuál princesa tiene un dragón llamado Mushu en la versión cómica?', a:['Mulán','Blancanieves','Aurora'], correct:0, difficulty:3},
+      {q:'¿Quién ayuda a Cenicienta con el carruaje?', a:['La hada madrina','Los ratones','La reina'], correct:1, difficulty:2},
+      {q:'¿Qué película presenta a Simba?', a:['El Rey León','La Sirenita','Pocahontas'], correct:0, difficulty:1},
+      {q:'¿Qué princesa tiene el pelo mágico?', a:['Rapunzel','Bella','Ariel'], correct:0, difficulty:2},
+      {q:'¿Qué personaje dice "Hakuna Matata"?', a:['Simba y Timón','Pinocho','Aladdin'], correct:0, difficulty:2},
+      {q:'¿En qué película aparece una lámpara mágica?', a:['Aladdín','Moana','Coco'], correct:0, difficulty:2},
+      {q:'¿Cuál de estas no es una princesa clásica de Disney?', a:['Elsa','Moana','Tusitala'], correct:2, difficulty:4},
+      {q:'¿Qué película tiene a Tiana como protagonista?', a:['La Princesa y el Sapo','La Bella y la Bestia','Brave'], correct:0, difficulty:3},
+      {q:'¿Qué princesa vive en una isla y busca al océano?', a:['Moana','Ariel','Pocahontas'], correct:0, difficulty:3}
+    ];
+
+    function buildQuiz(){
+      const area = $('#quizArea'); area.innerHTML='';
+      let score = 0, asked = 0;
+      // Ordenar preguntas por dificultad ascendente para que "vayan aumentando"
+      const ordered = quizQuestions.slice().sort((a,b)=> a.difficulty - b.difficulty);
+
+      ordered.forEach((qq, idx)=>{
+        const block = document.createElement('div'); block.className='card'; block.style.padding='12px;margin:10px 0';
+        block.innerHTML = `<strong style="display:block;margin-bottom:8px">${qq.q}</strong><div style="font-size:.75rem;color:var(--muted);margin-bottom:8px">Dificultad: ${qq.difficulty}</div>`;
+        const choices = document.createElement('div'); choices.className='choices';
+        qq.a.forEach((opt,i)=>{
+          const btn = document.createElement('button'); btn.textContent = opt;
+          btn.addEventListener('click', ()=>{
+            // disable immediately
+            if(btn.disabled) return;
+            asked++;
+            if(i===qq.correct){ score++; btn.style.borderColor='green'; btn.style.background='#f6fff6'; }
+            else { btn.style.borderColor='red'; btn.style.background='#fff6f8'; }
+            Array.from(choices.children).forEach(b=>b.disabled=true);
+            // When all answered:
+            if(asked === ordered.length){
+              if(score >= 10){
+                progress.completed.add(3); updateProgress();
+                showMessage('¡Perfecto!', `Acertaste ${score} de ${ordered.length}. Avanza a la etapa 4.`, 2600);
+                $('#to4').style.display = 'inline-block';
+              } else {
+                showMessage('Casi', `Acertaste ${score} de ${ordered.length}. Intenta de nuevo para llegar a 10.`, 2600);
+              }
+            }
+          });
+          choices.appendChild(btn);
+        });
+        block.appendChild(choices);
+        area.appendChild(block);
+      });
+    }
+
+    $('#to4').onclick = ()=> loadStage(4);
+
+    /* ---------------- Stage 4: Puzzle with selection + drag (mejorado) ---------------- */
+    let puzzle = {canvas:null,ctx:null,rows:3,cols:3,tiles:[],tileW:0,tileH:0,img:null,first:null,dragging:false,dragTile:-1,dragOffset:{x:0,y:0},preview:null,initialized:false};
+    function initPuzzle(){
+      // guard to avoid re-initializar multiples veces
+      if(puzzle.initialized) return;
+      puzzle.initialized = true;
+
+      const canvas = $('#puzzleCanvas'); puzzle.canvas = canvas; puzzle.ctx = canvas.getContext('2d');
+      const img = new Image(); img.src = ASSETS.puzzleImage; puzzle.img = img;
+      puzzle.first = null; puzzle.dragging = false; puzzle.dragTile = -1;
+
+      img.onload = ()=>{
+        const maxW = Math.min(window.innerWidth*0.9,560);
+        canvas.width = maxW; canvas.height = maxW * (img.height/img.width);
+        const w = canvas.width, h = canvas.height;
+        puzzle.tileW = Math.floor(w / puzzle.cols); puzzle.tileH = Math.floor(h / puzzle.rows);
+        puzzle.tiles = [];
+        for(let r=0;r<puzzle.rows;r++) for(let c=0;c<puzzle.cols;c++) puzzle.tiles.push({r,c,srcIndex: r*puzzle.cols+c});
+        shufflePuzzle(); drawPuzzle();
+      }
+
+      document.getElementById('shufflePuzzle').onclick = ()=>{ shufflePuzzle(); drawPuzzle(); }
+
+      // helper to get index from coords
+      function indexFromPos(x,y){
+        const c = Math.floor(x / puzzle.tileW), r = Math.floor(y / puzzle.tileH);
+        if(c<0||c>=puzzle.cols||r<0||r>=puzzle.rows) return -1;
+        return r*puzzle.cols + c;
+      }
+
+      // mousedown / start drag
+      canvas.addEventListener('mousedown', (e)=>{
+        const rect = canvas.getBoundingClientRect(); const x = e.clientX-rect.left, y = e.clientY-rect.top;
+        const idx = indexFromPos(x,y);
+        if(idx < 0) return;
+        // start dragging
+        puzzle.dragging = true; puzzle.dragStart = {x,y}; puzzle.dragTile = idx;
+        puzzle.dragOffset.x = x - ( (idx % puzzle.cols) * puzzle.tileW );
+        puzzle.dragOffset.y = y - ( Math.floor(idx / puzzle.cols) * puzzle.tileH );
+        puzzle.preview = {x,y};
+        // set selection to clicked tile (resaltar)
+        puzzle.first = idx;
+        drawPuzzle();
+      });
+
+      window.addEventListener('mousemove', (e)=>{
+        if(!puzzle.dragging) return;
+        const rect = canvas.getBoundingClientRect(); const x = e.clientX-rect.left, y = e.clientY-rect.top;
+        puzzle.preview = {x,y};
+        drawPuzzle();
+      });
+
+      window.addEventListener('mouseup', (e)=>{
+        if(!puzzle.dragging) return;
+        puzzle.dragging = false;
+        const rect = canvas.getBoundingClientRect(); const x = e.clientX-rect.left, y = e.clientY-rect.top;
+        const toIdx = indexFromPos(x,y);
+        if(toIdx >= 0 && toIdx !== puzzle.dragTile){
+          swapTiles(puzzle.dragTile, toIdx);
+        }
+        puzzle.dragTile = -1; puzzle.preview = null;
+        // Al mover, quitar resaltado (solicitado)
+        puzzle.first = null;
+        drawPuzzle(); checkComplete();
+      });
+
+      // tap/click select + swap behavior
+      canvas.addEventListener('click', (e)=>{
+        // ignore click if it immediately follows a drag (avoid double action)
+        if(puzzle.dragging) return;
+        const rect = canvas.getBoundingClientRect(); const x = e.clientX-rect.left, y = e.clientY-rect.top;
+        const idx = indexFromPos(x,y);
+        if(idx < 0) return;
+        if(puzzle.first == null){
+          puzzle.first = idx; drawPuzzle();
+        } else if(puzzle.first === idx){
+          puzzle.first = null; drawPuzzle();
+        } else {
+          swapTiles(puzzle.first, idx);
+          // after swap, remove selection highlight
+          puzzle.first = null; drawPuzzle(); checkComplete();
+        }
+      });
+
+      // touch support (similar to mouse)
+      canvas.addEventListener('touchstart', (e)=>{
+        if(e.touches.length > 1) return;
+        const t = e.touches[0]; const rect = canvas.getBoundingClientRect();
+        const x = t.clientX - rect.left, y = t.clientY - rect.top;
+        const idx = indexFromPos(x,y);
+        if(idx < 0) return;
+        puzzle.first = idx; drawPuzzle();
+        // emulate drag start
+        puzzle.dragging = true; puzzle.dragTile = idx;
+        puzzle.dragOffset.x = x - ( (idx % puzzle.cols) * puzzle.tileW );
+        puzzle.dragOffset.y = y - ( Math.floor(idx / puzzle.cols) * puzzle.tileH );
+        puzzle.preview = {x,y};
+      }, {passive:true});
+
+      window.addEventListener('touchmove', (e)=>{
+        if(!puzzle.dragging || e.touches.length===0) return;
+        const t = e.touches[0]; const rect = canvas.getBoundingClientRect();
+        const x = t.clientX - rect.left, y = t.clientY - rect.top;
+        puzzle.preview = {x,y}; drawPuzzle();
+      }, {passive:true});
+
+      window.addEventListener('touchend', (e)=>{
+        if(!puzzle.dragging) return;
+        puzzle.dragging = false;
+        // determine drop location using last preview
+        if(puzzle.preview){
+          const toIdx = indexFromPos(puzzle.preview.x,puzzle.preview.y);
+          if(toIdx >= 0 && toIdx !== puzzle.dragTile){
+            swapTiles(puzzle.dragTile, toIdx);
+          }
+        }
+        puzzle.dragTile = -1; puzzle.preview = null;
+        // remove highlight after move
+        puzzle.first = null;
+        drawPuzzle(); checkComplete();
+      }, {passive:true});
+    }
+
+    function shufflePuzzle(){
+      for(let i=puzzle.tiles.length-1;i>0;i--){
+        const j = Math.floor(Math.random()*(i+1));
+        [puzzle.tiles[i].srcIndex, puzzle.tiles[j].srcIndex] = [puzzle.tiles[j].srcIndex, puzzle.tiles[i].srcIndex];
+      }
+    }
+
+    function drawPuzzle(){
+      const ctx = puzzle.ctx, img = puzzle.img;
+      ctx.clearRect(0,0,puzzle.canvas.width,puzzle.canvas.height);
+      for(let i=0;i<puzzle.tiles.length;i++){
+        const tile = puzzle.tiles[i]; const r = Math.floor(i/puzzle.cols), c = i%puzzle.cols;
+        const sx = (tile.srcIndex % puzzle.cols) * (img.width / puzzle.cols);
+        const sy = Math.floor(tile.srcIndex / puzzle.cols) * (img.height / puzzle.rows);
+        ctx.drawImage(img, sx, sy, img.width/puzzle.cols, img.height/puzzle.rows, c*puzzle.tileW, r*puzzle.tileH, puzzle.tileW, puzzle.tileH);
+      }
+      // highlight selected (persist until moved)
+      if(puzzle.first != null){
+        const r = Math.floor(puzzle.first / puzzle.cols), c = puzzle.first % puzzle.cols;
+        ctx.strokeStyle = '#ff7fbf'; ctx.lineWidth = 6; ctx.strokeRect(c*puzzle.tileW+3, r*puzzle.tileH+3, puzzle.tileW-6, puzzle.tileH-6);
+      }
+      // draw dragging preview as semi-transparent image
+      if(puzzle.dragging && puzzle.dragTile >= 0 && puzzle.preview){
+        const srcIndex = puzzle.tiles[puzzle.dragTile].srcIndex;
+        const sx = (srcIndex % puzzle.cols) * (puzzle.img.width / puzzle.cols);
+        const sy = Math.floor(srcIndex / puzzle.cols) * (puzzle.img.height / puzzle.rows);
+        const dx = puzzle.preview.x - puzzle.dragOffset.x, dy = puzzle.preview.y - puzzle.dragOffset.y;
+        ctx.save();
+        ctx.globalAlpha = 0.85;
+        ctx.drawImage(puzzle.img, sx, sy, puzzle.img.width/puzzle.cols, puzzle.img.height/puzzle.rows, dx, dy, puzzle.tileW, puzzle.tileH);
+        ctx.restore();
+        // ghost original place
+        const r0 = Math.floor(puzzle.dragTile/puzzle.cols), c0 = puzzle.dragTile%puzzle.cols;
+        ctx.save(); ctx.globalAlpha = 0.25; ctx.fillStyle='#ffffff'; ctx.fillRect(c0*puzzle.tileW, r0*puzzle.tileH, puzzle.tileW, puzzle.tileH); ctx.restore();
+        // outline preview
+        ctx.strokeStyle = '#ff7fbf'; ctx.lineWidth = 4;
+        ctx.strokeRect(dx+2, dy+2, puzzle.tileW-4, puzzle.tileH-4);
+      }
+    }
+
+    function swapTiles(a,b){
+      [puzzle.tiles[a].srcIndex, puzzle.tiles[b].srcIndex] = [puzzle.tiles[b].srcIndex, puzzle.tiles[a].srcIndex];
+    }
+
+    function checkComplete(){
+      const ok = puzzle.tiles.every((t,i)=> t.srcIndex === i);
+      if(ok && !progress.completed.has(4)){
+        progress.completed.add(4); updateProgress();
+        showMessage('Rompecabezas completo','Muy bien — continúa a la etapa final.',3000);
+        $('#to5').style.display = 'inline-block';
+        // hide shuffle button: ya no debe aparecer
+        const sp = document.getElementById('shufflePuzzle');
+        if(sp) sp.style.display = 'none';
+      }
+    }
+
+    $('#to5').onclick = ()=> loadStage(5);
+
+    /* ---------------- Stage 5: Confetti circular y más largo ---------------- */
+    $('#playFinal').addEventListener('click', ()=>{
+      try{ const audio = new Audio(ASSETS.finalMusic); audio.play(); }catch(e){}
+      // count more pieces and duration mucho mayor
+      launchConfetti(360, 15000); // many pieces, 15s
+      progress.completed.add(5); updateProgress();
+    });
+
+    function launchConfetti(count=120, duration=4000){
+      // canvas overlay
+      const c = document.createElement('canvas'); c.style.position='fixed'; c.style.left=0; c.style.top=0; c.style.pointerEvents='none';
+      c.width = window.innerWidth; c.height = window.innerHeight; c.style.zIndex=9999;
+      document.body.appendChild(c);
+      const ctx = c.getContext('2d'); let pieces = [];
+      const colors = ['#ff7fbf','#ffd6e8','#ffe6f2','#ffd1b3','#ffcfde','#ffc1e6'];
+      for(let i=0;i<count;i++){
+        pieces.push({
+          x: Math.random()*c.width,
+          y: Math.random()*-c.height,
+          vy: 1 + Math.random()*4,
+          size: 4 + Math.random()*10,
+          color: colors[Math.floor(Math.random()*colors.length)],
+          r: Math.random()*Math.PI*2,
+          vx: (Math.random()-0.5)*2,
+          angularVel: (Math.random()-0.5)*0.2
+        });
+      }
+      const start = performance.now();
+      function frame(now){
+        const elapsed = now - start;
+        ctx.clearRect(0,0,c.width,c.height);
+        pieces.forEach(p=>{
+          p.x += p.vx;
+          p.y += p.vy;
+          p.r += p.angularVel;
+          // draw circle (en lugar de rect)
+          ctx.beginPath();
+          ctx.fillStyle = p.color;
+          ctx.arc(p.x, p.y, p.size, 0, Math.PI*2);
+          ctx.fill();
+        });
+        // remove pieces that exited the view
+        pieces = pieces.filter(p=>p.y < c.height + 50);
+        if(elapsed < duration || pieces.length){
+          requestAnimationFrame(frame);
+        } else {
+          c.remove();
+        }
+      }
+      requestAnimationFrame(frame);
+    }
+
+    // keyboard nav convenience
+    document.addEventListener('keydown', e=>{
+      if($('#stageArea').style.display==='none') return;
+      const visible = [1,2,3,4,5].find(i=> $(`#stage${i}`).style.display!=='none');
+      if(e.key==='ArrowRight'){ if(visible<5) loadStage(visible+1); }
+      if(e.key==='ArrowLeft'){ if(visible>1) loadStage(visible-1); }
+    });
+
+    // showOnly initial (but splash first)
+    showOnly(1);
+
+    // expose initPuzzle when loadStage(4) called (lazy)
+    (function overrideLoad(){
+      const _old = loadStage;
+      window.loadStage = function(n){
+        _old(n);
+        if(n===4){
+          // small delay to ensure canvas size measures right
+          setTimeout(()=>{ initPuzzle(); }, 160);
+        }
+      }
+    })();
+
+    // When any stage completes via other flows, updateProgress is called there.
+  </script>
+</body>
+</html>
